@@ -36,17 +36,17 @@ import {ElMessage} from "element-plus";
 
 const searchList = ref([
   {
-    label: "订单名称:",
-    value: "",
-    type: 0,
-    model: "subject",
-    option: []
-  },
-  {
     label: "订单号:",
     value: "",
     type: 0,
     model: "traceNo",
+    option: []
+  },
+  {
+    label: "订单名称:",
+    value: "",
+    type: 0,
+    model: "subject",
     option: []
   },
   {
@@ -63,15 +63,15 @@ const searchList = ref([
     model: "orderState",
     option: [
       {
-        value: null,
+        value: 1,
         label: '全部订单',
       },
       {
-        value: true,
+        value: 2,
         label: '已支付',
       },
       {
-        value: false,
+        value: 3,
         label: '未支付',
       }
     ]
@@ -84,11 +84,52 @@ const searchParams = ref({
   orderState: "",
 })
 const search = () => {
-  searchParams.value.orderState=searchParams.value.orderState[0]
-  store.commit("setSearchParams", searchParams.value)
+  console.log("searchParams.value.orderState", searchParams.value)
+  let param = deepClone(searchParams.value);
+  if (searchParams.value.orderState.length !== 0 && searchParams.value.orderState[0]) {
+    switch (searchParams.value.orderState[0]) {
+      case 1:  {
+        param.orderState=""
+        break
+      }
+      case 2: {
+        param.orderState = true
+        break
+      }
+      case 3: {
+        param.orderState = false
+        break
+      }
+    }
+  }
+  console.log("searchParams.value.orderState", param)
+
+  store.commit("setSearchParams", param)
+
   ElMessage.success("搜索成功")
 }
+const deepClone=(obj)=>{
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
 
+  if (Array.isArray(obj)) {
+    const clonedArray = [];
+    for (let i = 0; i < obj.length; i++) {
+      clonedArray[i] = deepClone(obj[i]);
+    }
+    return clonedArray;
+  }
+
+  const clonedObject = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      clonedObject[key] = deepClone(obj[key]);
+    }
+  }
+
+  return clonedObject;
+}
 
 </script>
 <style>

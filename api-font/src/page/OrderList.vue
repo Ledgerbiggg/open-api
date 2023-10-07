@@ -95,21 +95,21 @@ import store from "@/store/store";
 const tableRef = ref();
 const tableData = ref([])
 const router = useRouter()
-const searchParams=computed(()=>{
+const searchParams = computed(() => {
   return store.state.search
 })
 
 onMounted(() => {
-  http.get("/order/getOrderList").then(res => {
-    console.log("getOrderList", res.data.data)
-    tableData.value = res.data.data
-  })
+  getOrderList()
 })
 
 
-// const clearFilter = () => {
-//   tableRef.value.clearFilter();
-// };
+const getOrderList = (params) => {
+  http.get("/order/getOrderList", params).then(res => {
+    console.log("getOrderList", res.data.data)
+    tableData.value = res.data.data
+  })
+};
 
 const filterTag = (value, row) => {
   return row.tag === value;
@@ -120,16 +120,13 @@ const filterTag = (value, row) => {
 //   return row[property] === value;
 // };
 
-watch(searchParams,()=>{
-  console.log("newVal.value",store.state.searchParams)
-  let param={}
+watch(searchParams, () => {
+  console.log("newVal.value", store.state.searchParams)
+  let param = {}
   for (let newValKey in store.state.searchParams) {
     param[newValKey] = store.state.searchParams[newValKey]
   }
-  http.get("/order/getOrderList", param).then(res => {
-    console.log("getOrderList", res.data.data)
-    tableData.value = res.data.data
-  })
+  getOrderList(param)
 })
 
 const handleEdit = (row) => {
