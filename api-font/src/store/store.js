@@ -7,6 +7,7 @@ export default createStore({
         userInfo: {
             username: "",
             password: "",
+            role: "",
         },
         //文档地址
         linkList: {
@@ -37,6 +38,11 @@ export default createStore({
         search:0,
         searchParams: {
 
+        },
+        //search接口的条件
+        search2:0,
+        searchParams2:{
+
         }
 
     },
@@ -63,7 +69,15 @@ export default createStore({
         setSearchParams(state, data) {
             state.searchParams = data
             state.search++
-        }
+        },
+        setSearchParams2(state, data) {
+            state.searchParams2 = data
+            state.search2++
+        },
+        setRole(state, data){
+            state.userInfo.role = data
+        },
+
     },
     actions: {
         // 在此定义异步修改状态的方法

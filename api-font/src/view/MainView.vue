@@ -4,7 +4,13 @@
       <img src="https://image-bed-for-ledgerhhh.oss-cn-beijing.aliyuncs.com/image/f898326080e5beae1f061950b308fc9.jpg">
       <div class="title">ledger-API 接口开放平台</div>
       <div class="options">
-        <div class="option" v-for="(item,index) in optionList" :key="index" @click="goRouter(item.router)">
+        <div
+            v-show="item.tag.includes(role)"
+            class="option"
+            v-for="(item,index)
+            in optionList"
+            :key="index"
+            @click="goRouter(item.router)">
           <el-icon>
             <component :is="item.componentName"></component>
           </el-icon>
@@ -31,34 +37,51 @@
 </template>
 <script setup>
 import router from "@/router/router";
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useStore} from "vuex";
 
+const role = ref("")
 
 const optionList = ref([
   {
     router: "/welcome",
     text: "欢迎",
     componentName: "Sunny",
+    tag: ["tourist", "admin"],
   },
   {
     router: "/interface/list",
     text: "接口广场",
     componentName: "SoldOut",
+    tag: ["tourist", "admin"],
   },
   {
     router: "/recharge/list",
     text: "积分商城",
     componentName: "ShoppingCart",
+    tag: ["tourist", "admin"],
   },
   {
     router: "/order/list",
     text: "我的订单",
     componentName: "ShoppingCart",
+    tag: ["tourist", "admin"],
+  },
+  {
+    router: "/admin/interfaceManager",
+    text: "接口管理",
+    componentName: "Avatar",
+    tag: ["admin"],
   },
 ])
 let store = useStore();
 const docLink = store.state.linkList.docLink
+
+onMounted(() => {
+  let item = window.localStorage.getItem('Role');
+  store.commit('setRole', item);
+  role.value = item
+})
 
 const goRouter = (path) => {
   router.push(path)

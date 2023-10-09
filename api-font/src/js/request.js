@@ -42,9 +42,14 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response => {
     //接收到响应数据并成功后的一些共有的处理，关闭loading等
     let token = response.headers.get('Authorization');
+    let Role = response.headers.get('Role');
+    console.log("token",token)
     if (token) {
         window.localStorage.setItem('token', token);
         window.localStorage.setItem('unexpired', 'ledger');
+    }
+    if (Role) {
+        window.localStorage.setItem('Role', Role);
     }
     if (response.data.code === 403 ) {
         window.localStorage.removeItem("unexpired")
