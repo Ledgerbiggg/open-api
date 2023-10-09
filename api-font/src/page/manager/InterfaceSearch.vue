@@ -1,10 +1,21 @@
 <template>
-  <div class="box">
+  <div class="interfaceSearchBox">
     <div class="searchBox">
       <div class="oneItem" v-for="(item,index) in searchList" :key="index">
         <div class=label>{{ item.label }}</div>
         <div class="input">
-          <el-input v-if="item.type===0" v-model="searchParams[item.model]" placeholder="请输入"/>
+          <!-- 0=输入框  -->
+          <el-input
+              v-if="item.type===0"
+              v-model="searchParams[item.model]"
+              placeholder="请输入"/>
+          <!-- 1=int  -->
+          <el-input-number
+              v-if="item.type===1"
+              v-model="searchParams[item.model]"
+              :min="1"
+              :max="10"/>
+          <!-- 1=double  -->
           <el-input-number
               v-if="item.type===2"
               v-model="searchParams[item.model]"
@@ -13,6 +24,7 @@
               :max="9999"
               controls-position="right"
           />
+          <!-- 1=下拉  -->
           <el-cascader
               v-if="item.type===3"
               placeholder="请选择"
@@ -20,6 +32,7 @@
               v-model="searchParams[item.model]"
               :show-all-levels="false"/>
         </div>
+
       </div>
       <div class="searchBtn">
         <el-button>重置</el-button>
@@ -36,78 +49,87 @@ import {ElMessage} from "element-plus";
 
 const searchList = ref([
   {
-    label: "订单号:",
+    label: "接口id:",
     value: "",
     type: 0,
-    model: "traceNo",
+    model: "id",
     option: []
   },
   {
-    label: "订单名称:",
+    label: "接口名称:",
     value: "",
     type: 0,
-    model: "subject",
+    model: "name",
     option: []
   },
   {
-    label: "支付金额:",
-    value: 0,
-    type: 2,
-    model: "totalAmount",
-    option: []
-  },
-  {
-    label: "订单状态:",
-    value: 1,
+    label: "接口状态:",
+    value: "",
     type: 3,
-    model: "orderState",
+    model: "status",
     option: [
       {
         value: 1,
-        label: '全部订单',
+        label: '未启用',
       },
       {
         value: 2,
-        label: '已支付',
+        label: '启用',
+      }
+    ]
+  },
+  {
+    label: "接口消费金额:",
+    value: 0,
+    type:1,
+    model: "consume",
+    option: []
+  },
+  {
+    label: "接口方法:",
+    value: "",
+    type: 3,
+    model: "method",
+    option: [
+      {
+        value: "GET",
+        label: 'GET',
       },
       {
-        value: 3,
-        label: '未支付',
+        value: "POST",
+        label: 'POST',
       }
     ]
   },
 ])
 const searchParams = ref({
-  subject: "",
-  traceNo: "",
-  totalAmount: "",
-  orderState: "",
+  id: "",
+  name: "",
+  status: "",
+  consume: "",
+  method: ""
 })
 const search = () => {
-  console.log("searchParams.value.orderState", searchParams.value)
   let param = deepClone(searchParams.value);
-  if (searchParams.value.orderState.length !== 0 && searchParams.value.orderState[0]) {
-    switch (searchParams.value.orderState[0]) {
-      case 1:  {
-        param.orderState=""
-        break
-      }
-      case 2: {
-        param.orderState = true
-        break
-      }
-      case 3: {
-        param.orderState = false
-        break
-      }
+  for (let i = 0; i < searchList.value.length; i++) {
+    let item = searchList.value[i]
+    if(item.type===3){
+      param[item.model] = getOne(param[item.model])
     }
   }
-  console.log("searchParams.value.orderState1111", param)
+  param.status-=1
+  console.log("param==========", param)
 
-  store.commit("setSearchParams", param)
+  store.commit("setSearchParams2", param)
 
   ElMessage.success("搜索成功")
 }
+const getOne=(arr)=>{
+  if(arr.length !== 0 && arr[0]){
+    return arr[0]
+  }
+}
+
 const deepClone = (obj) => {
   if (typeof obj !== 'object' || obj === null) {
     return obj;
@@ -137,9 +159,13 @@ const deepClone = (obj) => {
 .el-cascader-menu__wrap.el-scrollbar__wrap {
   height: 120px;
 }
+.interfaceSearchBox .el-input-number__increase{
+  margin-left: 100%;
+  transform: translateX(-100%);
+}
 </style>
 <style lang="less" scoped>
-.box {
+.interfaceSearchBox {
   width: 100%;
   height: 20vh;
   display: flex;
@@ -174,6 +200,7 @@ const deepClone = (obj) => {
         font-size: 14px;
         font-weight: 600;
         margin-right: 9px;
+
       }
     }
 
